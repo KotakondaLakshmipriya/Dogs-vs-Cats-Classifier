@@ -1,0 +1,99 @@
+# Step 1: Prepare the Data
+dog_images = [
+    "dog1.txt", "dog2.txt", "dog3.txt"  # file names for dog images
+]
+cat_images = [
+    "cat1.txt", "cat2.txt", "cat3.txt"  # file names for cat images
+]
+
+# Sample image contents in text format
+image_data = {
+    "dog1.txt": [
+        ".....",
+        "..#..",
+        ".###.",
+        "..#..",
+        "....."
+    ],
+    "dog2.txt": [
+        ".....",
+        ".#.#.",
+        "#####",
+        ".#.#.",
+        "....."
+    ],
+    "dog3.txt": [
+        ".....",
+        "..#..",
+        ".###.",
+        ".###.",
+        "....."
+    ],
+    "cat1.txt": [
+        ".....",
+        ".#.#.",
+        ".###.",
+        "..#..",
+        "....."
+    ],
+    "cat2.txt": [
+        ".....",
+        "..#..",
+        "..#..",
+        "..#..",
+        "....."
+    ],
+    "cat3.txt": [
+        ".....",
+        ".###.",
+        "#####",
+        ".###.",
+        "....."
+    ]
+}
+
+# Step 2: Preprocess the Data
+def preprocess_image(image):
+    return [list(line) for line in image_data[image]]
+
+dog_images = [preprocess_image(img) for img in dog_images]
+cat_images = [preprocess_image(img) for img in cat_images]
+
+# Convert to numerical data (for simplicity, # -> 1, . -> 0)
+def preprocess_image(image):
+    return [list(line) for line in image_data[image]]
+
+dog_images = [preprocess_image(img) for img in dog_images]
+cat_images = [preprocess_image(img) for img in cat_images]
+
+# Convert to numerical data (for simplicity, # -> 1, . -> 0)
+def convert_to_numerical(image):
+    return [[1 if pixel == '#' else 0 for pixel in row] for row in image]
+
+dog_images = [convert_to_numerical(img) for img in dog_images]
+cat_images = [convert_to_numerical(img) for img in cat_images]
+
+# Step 3: Define a Simple Model (using Manhattan distance)
+def flatten(image):
+    return [pixel for row in image for pixel in row]
+
+def distance(img1, img2):
+    return sum(abs(p1 - p2) for p1, p2 in zip(flatten(img1), flatten(img2)))
+
+# Compute the average image for dogs and cats
+import numpy as np
+
+average_dog_image = np.mean(dog_images, axis=0)
+average_cat_image = np.mean(cat_images, axis=0)
+
+# Step 4: Classify a New Image
+def classify(image):
+    img = convert_to_numerical(preprocess_image(image))
+    dist_to_dog = distance(img, average_dog_image)
+    dist_to_cat = distance(img, average_cat_image)
+    return "dog" if dist_to_dog < dist_to_cat else "cat"
+
+# Testing the model
+test_images = ["dog1.txt", "cat1.txt", "dog3.txt", "cat2.txt"]
+for test_image in test_images:
+    print(f"{test_image} is classified as {classify(test_image)}")
